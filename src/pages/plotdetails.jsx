@@ -37,6 +37,7 @@ const PlotDetails = () => {
 
   const [isStartingChat, setIsStartingChat] = useState(false);
   const navigate = useNavigate();
+
 const handleContactSeller = async () => {
     // Assuming your plot object contains a 'seller' field with the seller's ID
     if (!plot.seller) {
@@ -49,7 +50,7 @@ const handleContactSeller = async () => {
       const token = localStorage.getItem('token');
       
       // Make the request to the API route we planned earlier
-      const response = await axios.post('/api/conversations/start', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/conversations/start`, {
         sellerId: plot.seller._id || plot.seller, // Works whether seller is populated or just an ID
         plotId: plot._id
       }, {

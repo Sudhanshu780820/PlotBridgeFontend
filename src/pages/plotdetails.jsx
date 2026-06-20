@@ -23,7 +23,19 @@ L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   shadowUrl: markerShadow,
 });
-const [isStartingChat, setIsStartingChat] = useState(false);
+
+  // --- NEW CHAT LOGIC END ---
+
+const PlotDetails = () => {
+  const { id } = useParams();
+  const [plot, setPlot] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // State for the image gallery
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const [isStartingChat, setIsStartingChat] = useState(false);
   const navigate = useNavigate();
 const handleContactSeller = async () => {
     // Assuming your plot object contains a 'seller' field with the seller's ID
@@ -57,16 +69,6 @@ const handleContactSeller = async () => {
       setIsStartingChat(false);
     }
   };
-  // --- NEW CHAT LOGIC END ---
-
-const PlotDetails = () => {
-  const { id } = useParams();
-  const [plot, setPlot] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
-  // State for the image gallery
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchPlotDetails = async () => {

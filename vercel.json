@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/assets/(.*)",
+      "destination": "/Frontend/assets/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/Frontend/index.html"
+    }
+  ]
+}

@@ -16,7 +16,7 @@ import SavedProperties from "./components/buyer/SavedProperties";
 import PlotDetails from "./pages/plotdetails";
 import Navbar from "./components/Navbar";
 import EditProperty from "./components/dashboard/EditProperty";
-
+import ChatPage from "./pages/ChatPage";
 const App = () => {
   return (
     <div className="overflow-x-hidden">
@@ -44,6 +44,7 @@ const App = () => {
         {/* Notice: The floating <AddPlot/> is gone! */}
         <Route path="/plots" element={<PlotsPage />} />
         <Route path="/plots/:id" element={<PlotDetails />} />
+        <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />

@@ -319,7 +319,7 @@ const PlotDetails = () => {
                    <button 
                      onClick={handleContactSeller}
                      disabled={isStartingChat}
-                     className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4                  rounded-xl shadow-md shadow-blue-200 transition-all mb-3 text-lg flex                  justify-center items-center ${
+                     className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-blue-200 transition-all mb-3 text-lg flex justify-center items-center ${
                        isStartingChat ? 'opacity-75 cursor-not-allowed' : ''
                      }`}
                         >

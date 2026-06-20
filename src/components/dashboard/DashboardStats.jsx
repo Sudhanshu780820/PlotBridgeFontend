@@ -17,7 +17,7 @@ const DashboardStats = () => {
         const token = localStorage.getItem("token");
         
         // Fetch from your backend dashboard route
-        const response = await fetch("/api/dashboard/stats", {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/stats`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

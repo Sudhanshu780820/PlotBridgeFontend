@@ -30,7 +30,7 @@ export default function EditProperty() {
   useEffect(() => {
     const fetchPlotDetails = async () => {
       try {
-        const response = await fetch(`/api/plots/${id}`);
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/${id}`);
         const result = await response.json();
 
         if (response.ok) {
@@ -97,7 +97,7 @@ export default function EditProperty() {
     }
 
     try {
-      const response = await fetch(`/api/plots/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

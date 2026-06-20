@@ -19,7 +19,7 @@ export default function MyListings() {
       }
 
       try {
-        const response = await fetch('/api/plots/my-listings', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/my-listings`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -52,7 +52,7 @@ export default function MyListings() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/plots/${plotId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/${plotId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

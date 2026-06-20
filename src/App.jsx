@@ -17,6 +17,7 @@ import PlotDetails from "./pages/plotdetails";
 import Navbar from "./components/Navbar";
 import EditProperty from "./components/dashboard/EditProperty";
 import ChatPage from "./pages/ChatPage";
+
 const App = () => {
   return (
     <div className="overflow-x-hidden">

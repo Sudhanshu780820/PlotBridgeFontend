@@ -19,7 +19,7 @@ export default function MyListings() {
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/my-listings`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/my-listings`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`

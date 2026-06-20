@@ -73,7 +73,7 @@ const handleContactSeller = async () => {
   useEffect(() => {
     const fetchPlotDetails = async () => {
       try {
-        await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

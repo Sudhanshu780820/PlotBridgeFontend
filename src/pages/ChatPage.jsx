@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-// Connect to your backend server
-const socket = io('http://localhost:5000'); // Replace with your actual backend URL
+const backendUrl = import.meta.env.VITE_API_BASE_URL;
+const socket = io(backendUrl); 
 
 const ChatPage = ({ currentUser }) => {
   const { conversationId } = useParams(); // Get the ID from the URL

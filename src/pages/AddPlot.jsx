@@ -98,7 +98,7 @@ const handlePublish = async (e) => {
     }
 
     // Send ONLY URLs to backend
-    const response = await fetch("/api/plots", {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

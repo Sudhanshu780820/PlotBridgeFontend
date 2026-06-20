@@ -1,6 +1,5 @@
-import Navbar from "../components/Navbar";
+
 import HeroSection from "../components/HeroSection";
-import SearchBar from "../components/SearchBar";
 import FeaturedPlots from "../components/FeaturedProperties";
 import Footer from "../components/Footer";
 

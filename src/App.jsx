@@ -17,6 +17,7 @@ import PlotDetails from "./pages/plotdetails";
 import Navbar from "./components/Navbar";
 import EditProperty from "./components/dashboard/EditProperty";
 import ChatPage from "./pages/ChatPage";
+import Inbox from "./pages/Inbox"
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/inbox" element={<Inbox />} />
       </Routes>
     </div>
   );

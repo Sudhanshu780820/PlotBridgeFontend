@@ -16,7 +16,7 @@ const ChatPage = ({ currentUser }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`/api/messages/${conversationId}`);
+       const res = await axios.get(`${backendUrl}/api/messages/${conversationId}`);
         setMessages(res.data);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -59,7 +59,7 @@ const ChatPage = ({ currentUser }) => {
 
     try {
       // Save message to MongoDB
-      const res = await axios.post('/api/messages', messageData);
+      const res = await axios.post(`${backendUrl}/api/messages`, messageData);
       
       // Send message to the other person via Socket.io
       socket.emit("send_message", res.data);
@@ -78,23 +78,30 @@ const ChatPage = ({ currentUser }) => {
         <h2 className="text-xl font-bold">Chat</h2>
       </div>
 
-      {/* Message Display Area */}
+     {/* Message Display Area */}
       <div className="flex-1 overflow-y-auto bg-gray-100 p-4 border-l border-r">
-        {messages.map((m, index) => (
-          <div 
-            key={index} 
-            ref={scrollRef}
-            className={`flex flex-col mb-4 ${m.senderId === currentUser._id ? 'items-end' : 'items-start'}`}
-          >
-            <div className={`px-4 py-2 rounded-lg max-w-[70%] ${
-              m.senderId === currentUser._id 
-                ? 'bg-blue-600 text-white rounded-br-none' 
-                : 'bg-white text-gray-800 rounded-bl-none shadow'
-            }`}>
-              {m.text}
+        {/* Safely check if messages is an array before mapping */}
+        {Array.isArray(messages) && messages.length > 0 ? (
+          messages.map((m, index) => (
+            <div 
+              key={index} 
+              ref={scrollRef}
+              className={`flex flex-col mb-4 ${m.senderId === currentUser?._id ? 'items-end' : 'items-start'}`}
+            >
+              <div className={`px-4 py-2 rounded-lg max-w-[70%] ${
+                m.senderId === currentUser?._id 
+                  ? 'bg-blue-600 text-white rounded-br-none' 
+                  : 'bg-white text-gray-800 rounded-bl-none shadow'
+              }`}>
+                {m.text}
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="text-center text-slate-400 mt-10">
+             No messages yet. Send a message to start the conversation!
           </div>
-        ))}
+        )}
       </div>
 
       {/* Message Input Area */}

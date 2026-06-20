@@ -18,7 +18,7 @@ export default function SellerDashboardStats() {
       if (!token) return; // Handle not logged in
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/stats`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/stats`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}` // Provide the token to unlock the route

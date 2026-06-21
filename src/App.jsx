@@ -34,6 +34,7 @@ const App = () => {
           
           <Route path="my-listings" element={<MyListings />} />
           <Route path="my-profile" element={<UserProfile />} />
+           <Route path="inbox" element={<Inbox />} />
         </Route>
 
       
@@ -50,7 +51,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/inbox" element={<Inbox />} />
+       
       </Routes>
     </div>
   );

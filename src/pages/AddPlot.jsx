@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
+import LoadingModal from "../components/LoadingModal";
 
 // Fix Leaflet marker icon asset paths in React environments
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,6 +14,7 @@ L.Icon.Default.mergeOptions({
 
 const AddPlot = () => {
   // 1. Centralized Form State Management
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     price: "",
@@ -82,6 +84,9 @@ const handlePublish = async (e) => {
   e.preventDefault();
 
   try {
+    // Show loading popup
+    setLoading(true);
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -89,37 +94,63 @@ const handlePublish = async (e) => {
       return;
     }
 
-    // Upload images directly to Cloudinary
     const imageUrls = [];
 
+    // Upload all images to Cloudinary
     for (const file of selectedFiles) {
       const url = await uploadToCloudinary(file);
       imageUrls.push(url);
     }
 
-    // Send ONLY URLs to backend
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/plots`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        ...formData,
-        images: imageUrls,
-      }),
-    });
+    // Create property
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/api/plots`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          images: imageUrls,
+        }),
+      }
+    );
 
     const result = await response.json();
 
     if (response.ok) {
       alert("Property listed successfully");
+
+      // Optional: Reset form
+      setFormData({
+        title: "",
+        price: "",
+        currency: "₹ Rupees",
+        category: "Residential",
+        size: "",
+        unit: "Sq. Ft.",
+        location: "",
+        description: "",
+        lat: "",
+        lng: "",
+      });
+
+      setSelectedFiles([]);
+
+      // Optional redirect
+      // navigate("/seller-dashboard");
     } else {
-      alert(result.message);
+      alert(result.message || "Failed to publish property");
     }
+
   } catch (error) {
     console.error(error);
     alert("Failed to publish property");
+  } finally {
+    // Hide loading popup
+    setLoading(false);
   }
 };
   return (
@@ -312,15 +343,22 @@ const handlePublish = async (e) => {
             </div>
 
             {/* Submit Button */}
-            <button 
-              type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99] pt-3 mt-4"
-            >
-              Publish Listing
-            </button>
+           <button
+  type="submit"
+  disabled={loading}
+  className="bg-blue-600 text-white px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? "Publishing..." : "Publish Property"}
+</button>
           </form>
         </div>
       </div>
+      <LoadingModal
+  isOpen={loading}
+  title="Publishing Property"
+  message="Uploading images and publishing your property. Please wait..."
+/>
+     
     </>
   );
 };

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import {  useNavigate } from "react-router-dom";
+import LoadingModal from "../components/LoadingModal";
 
 const Signup = () => {
   // 1. Initialize state for all form fields
+  const [loading, setLoading] = useState(false);
   const navigate=useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -36,67 +38,80 @@ const Signup = () => {
   };
 
   // 4. Handle Form Submission to Database
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Frontend Validation
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  // Frontend Validation
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  if (!formData.agreeTerms) {
+    alert("You must agree to the Terms & Conditions");
+    return;
+  }
+
+  try {
+    // Show loading popup
+    setLoading(true);
+
+    const dataToSend = new FormData();
+
+    dataToSend.append("fullName", formData.fullName);
+    dataToSend.append("email", formData.email);
+    dataToSend.append("phone", formData.phone);
+    dataToSend.append("userType", formData.userType);
+    dataToSend.append("password", formData.password);
+
+    if (formData.profilePhoto) {
+      dataToSend.append("profilePhoto", formData.profilePhoto);
     }
-    if (!formData.agreeTerms) {
-      alert("You must agree to the Terms & Conditions");
-      return;
+
+    if (formData.identityCard) {
+      dataToSend.append("identityCard", formData.identityCard);
     }
 
-    try {
-      const dataToSend = new FormData();
-      dataToSend.append("fullName", formData.fullName);
-      dataToSend.append("email", formData.email);
-      dataToSend.append("phone", formData.phone);
-      dataToSend.append("userType", formData.userType);
-      dataToSend.append("password", formData.password);
-      
-      if (formData.profilePhoto) {
-        dataToSend.append("profilePhoto", formData.profilePhoto);
-      }
-      if (formData.identityCard) {
-        dataToSend.append("identityCard", formData.identityCard);
-      }
+    console.log("--- Data Being Sent ---");
 
-      // 1. Properly log FormData to see what you are actually sending
-      console.log("--- Data Being Sent ---");
-      for (let [key, value] of dataToSend.entries()) {
-        console.log(`${key}:`, value);
-      }
+    for (let [key, value] of dataToSend.entries()) {
+      console.log(`${key}:`, value);
+    }
 
-      // 2. Make the request (Make sure this URL matches your backend EXACTLY)
-     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`, {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`,
+      {
         method: "POST",
         body: dataToSend,
-        // DO NOT set "Content-Type" manually when sending FormData
-      });
-
-      // 3. Parse the backend response
-      const result = await response.json();
-
-      // 4. Handle Success vs Failure
-      if (response.ok) {
-        // Success!
-        alert("Account created successfully!");
-        navigate("/login"); // This is what changes the page!
-      } else {
-        // Backend returned an error (e.g., Email already exists, missing file)
-        alert(`Failed: ${result.message}`);
-        console.error("Backend Error:", result);
       }
+    );
 
-    } catch (error) {
-      // This only triggers if the server is offline or network fails
-      console.error("Network or server error:", error);
-      alert("Could not connect to the server. Is your backend running?");
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("Account created successfully!");
+
+      // Optional small delay so user sees success
+      setTimeout(() => {
+        navigate("/login");
+      }, 500);
+
+    } else {
+      alert(`Failed: ${result.message}`);
+      console.error("Backend Error:", result);
     }
-  };
+
+  } catch (error) {
+    console.error("Network or server error:", error);
+
+    alert(
+      "Could not connect to the server. Please try again."
+    );
+  } finally {
+    // Hide loading popup
+    setLoading(false);
+  }
+};
 
   return (
     <>
@@ -237,12 +252,13 @@ const Signup = () => {
             </div>
 
             {/* Submit */}
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-            >
-              Create Account
-            </button>
+           <button
+  type="submit"
+  disabled={loading}
+  className="w-full bg-blue-600 text-white py-3 rounded-lg disabled:opacity-50"
+>
+  {loading ? "Creating Account..." : "Create Account"}
+</button>
           </form>
 
           <p className="text-center text-sm mt-6">
@@ -251,6 +267,11 @@ const Signup = () => {
           </p>
         </div>
       </div>
+        <LoadingModal
+    isOpen={loading}
+    title="Creating Account"
+    message="Please wait while we create your PlotBridge account..."
+  />
     </>
   );
 };

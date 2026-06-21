@@ -35,6 +35,7 @@ const App = () => {
           <Route path="my-listings" element={<MyListings />} />
           <Route path="my-profile" element={<UserProfile />} />
            <Route path="inbox" element={<Inbox />} />
+        <Route path="chat/:conversationId" element={<ChatPage />} />
         </Route>
 
       
@@ -47,7 +48,6 @@ const App = () => {
         {/* Notice: The floating <AddPlot/> is gone! */}
         <Route path="/plots" element={<PlotsPage />} />
         <Route path="/plots/:id" element={<PlotDetails />} />
-        <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />

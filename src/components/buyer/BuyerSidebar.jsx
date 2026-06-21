@@ -36,7 +36,7 @@ const BuyerSidebar = () => {
           <span>Saved Properties</span>
         </div>
         </Link>
-        <Link to="/inbox">
+        <Link to="/buyer-dashboard/inbox">
         <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
           <MessageSquare size={20} />
           <span>My Inquiries</span>

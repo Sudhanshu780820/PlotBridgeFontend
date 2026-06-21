@@ -35,13 +35,14 @@ const App = () => {
           <Route path="my-listings" element={<MyListings />} />
           <Route path="my-profile" element={<UserProfile />} />
            <Route path="inbox" element={<Inbox />} />
-        <Route path="chat/:conversationId" element={<ChatPage />} />
+           <Route path="chat/:conversationId" element={<ChatPage />} />
         </Route>
 
       
         <Route path="/buyer-dashboard" element={<BuyerDashHome />}>
         <Route index element={<SavedProperties />} />
           <Route path="my-profile" element={<BuyerProfile />} />
+           <Route path="chat/:conversationId" element={<ChatPage />} />
         </Route>
 
         {/* Public / Standalone Routes */}

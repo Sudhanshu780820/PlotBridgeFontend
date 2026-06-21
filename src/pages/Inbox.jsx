@@ -51,7 +51,7 @@ const Inbox = () => {
               return (
                 <Link 
                   key={chat._id} 
-                  to={`/chat/${chat._id}`}
+                  to={`/seller-dashboard/chat/${chat._id}`}
                   className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-4">

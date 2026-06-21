@@ -18,6 +18,7 @@ import Navbar from "./components/Navbar";
 import EditProperty from "./components/dashboard/EditProperty";
 import ChatPage from "./pages/ChatPage";
 import Inbox from "./pages/Inbox"
+import BuyerInbox from "./components/buyer/buyerinbox"
 
 const App = () => {
   return (
@@ -42,7 +43,7 @@ const App = () => {
         <Route path="/buyer-dashboard" element={<BuyerDashHome />}>
         <Route index element={<SavedProperties />} />
           <Route path="my-profile" element={<BuyerProfile />} />
-           <Route path="inbox" element={<Inbox />} />
+           <Route path="inbox" element={<BuyerInbox />} />
            <Route path="chat/:conversationId" element={<ChatPage />} />
         </Route>
 

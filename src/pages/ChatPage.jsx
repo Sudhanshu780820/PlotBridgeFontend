@@ -17,7 +17,15 @@ const ChatPage = ({ currentUser }) => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-       const res = await axios.get(`${backendUrl}/api/messages/${conversationId}`);
+
+         const res = await axios.get(
+          `${backendUrl}/api/messages/${conversationId}`,
+           {
+             headers: {
+               Authorization: `Bearer ${token}`
+                      }
+           }
+         );
         setMessages(res.data);
       } catch (error) {
         console.error("Error fetching messages:", error);

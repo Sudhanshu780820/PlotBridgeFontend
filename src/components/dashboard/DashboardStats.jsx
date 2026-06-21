@@ -27,10 +27,11 @@ export default function SellerDashboardStats() {
 
         const result = await response.json();
 
-        if (response.ok && result.success) {
-          // 3. Update the state with the live database numbers
-          setStats(result.stats);
-        }
+            console.log("API Response:", result);
+
+          if (response.ok) {
+            setStats(result);
+            }
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
       } finally {

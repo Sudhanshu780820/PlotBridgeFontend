@@ -28,11 +28,11 @@ export default function MyListings() {
 
         const result = await response.json();
 
-        if (response.ok && result.success) {
-          setMyPlots(result.data);
-        } else {
-          setError(result.message || "Failed to load listings");
-        }
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to load listings");
+                   }
+
+           setMyPlots(result.listings || []);
       } catch (err) {
         console.error("Fetch error:", err);
         setError("Could not connect to the server.");

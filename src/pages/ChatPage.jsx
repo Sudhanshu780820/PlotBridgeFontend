@@ -146,28 +146,32 @@ const ChatPage = () => {
         </div>
 
         {/* Right: Property Snippet */}
-        {plot && (
-          <Link 
-            to={`/plots/${plot._id}`} 
-            className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-2 hover:bg-slate-100 hover:border-blue-300 transition-all group"
-          >
-            <div className="w-12 h-12 rounded bg-slate-200 overflow-hidden shrink-0">
-              <img 
-                src={plot.images?.[0] || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=100&q=80"} 
-                alt="Plot" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-              />
-            </div>
-            <div className="hidden sm:block max-w-[150px]">
-              <p className="text-sm font-bold text-slate-800 truncate">{plot.title}</p>
-              <p className="text-xs text-slate-500 truncate flex items-center gap-0.5">
-                <MapPin size={10} /> {plot.location}
-              </p>
-            </div>
-            <ExternalLink size={16} className="text-slate-400 group-hover:text-blue-600 mr-1" />
-          </Link>
-        )}
-      </div>
+       {plot && (
+  <Link
+    to={`/plot/${plot._id}`}
+    className="flex gap-3 bg-white border rounded-xl p-3 shadow-sm hover:shadow-md"
+  >
+    <img
+      src={plot.images?.[0]}
+      alt={plot.title}
+      className="w-16 h-16 rounded-lg object-cover"
+    />
+
+    <div>
+      <h3 className="font-bold">
+        {plot.title}
+      </h3>
+
+      <p className="text-sm text-gray-500">
+        {plot.location}
+      </p>
+
+      <p className="font-semibold text-green-600">
+        ₹ {plot.price?.toLocaleString()}
+      </p>
+    </div>
+  </Link>
+)}
 
       {/* MESSAGES AREA */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
@@ -180,7 +184,8 @@ const ChatPage = () => {
 
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            const isMine = String(msg.senderId) === String(localUser?._id || localUser?.id);
+           const isMine =
+              String(msg.senderId?._id) ===String(localUser?._id || localUser?.id);
 
             return (
               <div key={index} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>

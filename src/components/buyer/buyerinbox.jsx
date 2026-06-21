@@ -46,8 +46,8 @@ const Inbox = () => {
   useEffect(() => {
     const filtered = conversations.filter((chat) => {
       const otherPerson = chat.participants?.find(
-        (p) => p._id !== currentUser?._id
-      );
+  (p) => p.userType === "Seller"
+     );
 
       return (
         otherPerson?.fullName
@@ -140,8 +140,8 @@ const Inbox = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           {filteredChats.map((chat) => {
             const otherPerson = chat.participants?.find(
-              (p) => p._id !== currentUser?._id
-            );
+  (p) => p.userType === "Seller"
+);
 
             return (
               <Link

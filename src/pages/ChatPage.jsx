@@ -172,49 +172,54 @@ const ChatPage = () => {
     </div>
   </Link>
 )}
+ </div>
 
       {/* MESSAGES AREA */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
         {/* Security Warning snippet */}
-        <div className="text-center mb-6">
-          <span className="bg-yellow-50 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full border border-yellow-200">
-            For your safety, never transfer money outside of the PlotBridge platform.
-          </span>
-        </div>
+        <div
+  key={index}
+  className={`flex ${
+    isMine ? "justify-end" : "justify-start"
+  }`}
+>
+  {!isMine && (
+    <img
+      src={
+        msg.senderId?.profilePhoto ||
+        otherUser?.profilePhoto ||
+        "https://ui-avatars.com/api/?name=User"
+      }
+      alt="Profile"
+      className="w-8 h-8 rounded-full object-cover mr-2 self-end"
+    />
+  )}
 
-        {messages.length > 0 ? (
-          messages.map((msg, index) => {
-           const isMine =
-              String(msg.senderId?._id) ===String(localUser?._id || localUser?.id);
+  <div className="max-w-[85%] sm:max-w-[70%]">
+    <div
+      className={`px-4 py-2.5 shadow-sm break-words ${
+        isMine
+          ? "bg-blue-600 text-white rounded-2xl rounded-br-sm"
+          : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm"
+      }`}
+    >
+      {msg.text}
+    </div>
 
-            return (
-              <div key={index} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-                <div className="max-w-[85%] sm:max-w-[70%]">
-                  <div className={`px-4 py-2.5 shadow-sm break-words ${
-                    isMine 
-                      ? "bg-blue-600 text-white rounded-2xl rounded-br-sm" 
-                      : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm"
-                  }`}>
-                    {msg.text}
-                  </div>
-                  <div className={`text-[10px] text-slate-400 mt-1 px-1 ${isMine ? "text-right" : "text-left"}`}>
-                    {msg.createdAt
-                      ? new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                      : "Sending..."}
-                  </div>
-                </div>
-              </div>
-            );
+    <div
+      className={`text-[10px] text-slate-400 mt-1 px-1 ${
+        isMine ? "text-right" : "text-left"
+      }`}
+    >
+      {msg.createdAt
+        ? new Date(msg.createdAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
           })
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center text-slate-400 pb-20">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-3">
-              <User size={30} className="text-slate-300" />
-            </div>
-            <p>No messages yet.</p>
-            <p className="text-sm">Start the conversation with {otherUser?.fullName || "this user"}!</p>
-          </div>
-        )}
+        : ""}
+    </div>
+  </div>
+</div>
         <div ref={scrollRef}></div>
       </div>
 
@@ -246,6 +251,7 @@ const ChatPage = () => {
       </div>
     </div>
   );
-};
+  }
+
 
 export default ChatPage;

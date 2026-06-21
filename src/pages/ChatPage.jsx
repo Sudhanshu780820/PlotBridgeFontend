@@ -174,54 +174,61 @@ const ChatPage = () => {
 )}
  </div>
 
-      {/* MESSAGES AREA */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-        {/* Security Warning snippet */}
-        <div
-  key={index}
-  className={`flex ${
-    isMine ? "justify-end" : "justify-start"
-  }`}
->
-  {!isMine && (
-    <img
-      src={
-        msg.senderId?.profilePhoto ||
-        otherUser?.profilePhoto ||
-        "https://ui-avatars.com/api/?name=User"
-      }
-      alt="Profile"
-      className="w-8 h-8 rounded-full object-cover mr-2 self-end"
-    />
-  )}
+  {messages.map((msg, index) => {
+    const isMine =
+      String(msg.senderId?._id || msg.senderId) ===
+      String(localUser?._id || localUser?.id);
 
-  <div className="max-w-[85%] sm:max-w-[70%]">
-    <div
-      className={`px-4 py-2.5 shadow-sm break-words ${
-        isMine
-          ? "bg-blue-600 text-white rounded-2xl rounded-br-sm"
-          : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm"
-      }`}
-    >
-      {msg.text}
-    </div>
+    return (
+      <div
+        key={msg._id || index}
+        className={`flex ${
+          isMine ? "justify-end" : "justify-start"
+        }`}
+      >
+        {!isMine && (
+          <img
+            src={
+              msg.senderId?.profilePhoto ||
+              otherUser?.profilePhoto ||
+              "https://ui-avatars.com/api/?name=User"
+            }
+            alt="Profile"
+            className="w-8 h-8 rounded-full object-cover mr-2 self-end"
+          />
+        )}
 
-    <div
-      className={`text-[10px] text-slate-400 mt-1 px-1 ${
-        isMine ? "text-right" : "text-left"
-      }`}
-    >
-      {msg.createdAt
-        ? new Date(msg.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : ""}
-    </div>
-  </div>
-</div>
-        <div ref={scrollRef}></div>
+        <div className="max-w-[85%] sm:max-w-[70%]">
+          <div
+            className={`px-4 py-2.5 shadow-sm break-words ${
+              isMine
+                ? "bg-blue-600 text-white rounded-2xl rounded-br-sm"
+                : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm"
+            }`}
+          >
+            {msg.text}
+          </div>
+
+          <div
+            className={`text-[10px] text-slate-400 mt-1 px-1 ${
+              isMine ? "text-right" : "text-left"
+            }`}
+          >
+            {msg.createdAt
+              ? new Date(msg.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : ""}
+          </div>
+        </div>
       </div>
+    );
+  })}
+
+  <div ref={scrollRef}></div>
+</div>
 
       {/* INPUT AREA */}
       <div className="bg-white border-t border-slate-200 p-3 sm:p-4 z-10">

@@ -1,42 +1,55 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { ArrowLeft, User, MapPin, ExternalLink } from "lucide-react";
 
 const backendUrl = import.meta.env.VITE_API_BASE_URL;
 const socket = io(backendUrl);
 
 const ChatPage = () => {
   const { conversationId } = useParams();
+  const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
+  const [chatMeta, setChatMeta] = useState(null); // Stores the plot and other user details
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const scrollRef = useRef();
 
   const localUser = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  // Fetch old messages
+  // Fetch both Messages and Conversation Details
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `${backendUrl}/api/messages/${conversationId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const headers = { Authorization: `Bearer ${token}` };
 
-        setMessages(res.data);
+        // Fetch messages and meta-data at the exact same time for speed
+        const [msgRes, metaRes] = await Promise.all([
+          axios.get(`${backendUrl}/api/messages/${conversationId}`, { headers }),
+          axios.get(`${backendUrl}/api/conversations/${conversationId}`, { headers })
+        ]);
+
+        if (Array.isArray(msgRes.data)) {
+          setMessages(msgRes.data);
+        } else if (msgRes.data && Array.isArray(msgRes.data.data)) {
+          setMessages(msgRes.data.data);
+        } else {
+          setMessages([]);
+        }
+
+        setChatMeta(metaRes.data);
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Error fetching chat data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchMessages();
+    fetchData();
   }, [conversationId, token]);
 
   // Socket Connection
@@ -54,15 +67,12 @@ const ChatPage = () => {
 
   // Auto Scroll
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Send Message
   const handleSendMessage = async (e) => {
     e.preventDefault();
-
     if (!newMessage.trim()) return;
 
     try {
@@ -72,20 +82,12 @@ const ChatPage = () => {
         text: newMessage,
       };
 
-      const res = await axios.post(
-        `${backendUrl}/api/messages`,
-        messageData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.post(`${backendUrl}/api/messages`, messageData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       socket.emit("send_message", res.data);
-
       setMessages((prev) => [...prev, res.data]);
-
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -93,86 +95,150 @@ const ChatPage = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Figure out who the OTHER person is
+  const otherUser = chatMeta?.participants?.find(
+    (p) => String(p._id) !== String(localUser._id || localUser.id)
+  );
+
+  const plot = chatMeta?.plotId;
+
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-gray-100">
-      {/* Header */}
-      <div className="bg-white border-b px-5 py-4 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-800">
-          Conversation
-        </h2>
+    <div className="flex flex-col h-screen bg-slate-50">
+      
+      {/* PROFESSIONAL HEADER */}
+      <div className="bg-white border-b border-slate-200 px-4 py-3 shadow-sm z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        
+        {/* Left: User Info */}
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="p-2 -ml-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center border border-blue-200 overflow-hidden">
+              {otherUser?.profilePhoto ? (
+                <img src={otherUser.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={20} />
+              )}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 leading-tight">
+                {otherUser?.fullName || "PlotBridge User"}
+              </h2>
+              <p className="text-xs font-medium text-emerald-600 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                {otherUser?.userType || "Member"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Property Snippet */}
+        {plot && (
+          <Link 
+            to={`/plots/${plot._id}`} 
+            className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-2 hover:bg-slate-100 hover:border-blue-300 transition-all group"
+          >
+            <div className="w-12 h-12 rounded bg-slate-200 overflow-hidden shrink-0">
+              <img 
+                src={plot.images?.[0] || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=100&q=80"} 
+                alt="Plot" 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+              />
+            </div>
+            <div className="hidden sm:block max-w-[150px]">
+              <p className="text-sm font-bold text-slate-800 truncate">{plot.title}</p>
+              <p className="text-xs text-slate-500 truncate flex items-center gap-0.5">
+                <MapPin size={10} /> {plot.location}
+              </p>
+            </div>
+            <ExternalLink size={16} className="text-slate-400 group-hover:text-blue-600 mr-1" />
+          </Link>
+        )}
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      {/* MESSAGES AREA */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        {/* Security Warning snippet */}
+        <div className="text-center mb-6">
+          <span className="bg-yellow-50 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full border border-yellow-200">
+            For your safety, never transfer money outside of the PlotBridge platform.
+          </span>
+        </div>
+
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            const isMine =
-              String(msg.senderId) ===
-              String(localUser?._id || localUser?.id);
+            const isMine = String(msg.senderId) === String(localUser?._id || localUser?.id);
 
             return (
-              <div
-                key={index}
-                className={`flex ${
-                  isMine ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div className="max-w-[75%]">
-                  <div
-                    className={`px-4 py-2 rounded-2xl shadow-sm break-words ${
-                      isMine
-                        ? "bg-blue-600 text-white rounded-br-md"
-                        : "bg-white text-gray-800 rounded-bl-md"
-                    }`}
-                  >
+              <div key={index} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+                <div className="max-w-[85%] sm:max-w-[70%]">
+                  <div className={`px-4 py-2.5 shadow-sm break-words ${
+                    isMine 
+                      ? "bg-blue-600 text-white rounded-2xl rounded-br-sm" 
+                      : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm"
+                  }`}>
                     {msg.text}
                   </div>
-
-                  <div
-                    className={`text-xs text-gray-500 mt-1 ${
-                      isMine ? "text-right" : "text-left"
-                    }`}
-                  >
+                  <div className={`text-[10px] text-slate-400 mt-1 px-1 ${isMine ? "text-right" : "text-left"}`}>
                     {msg.createdAt
-                      ? new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
+                      ? new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                      : "Sending..."}
                   </div>
                 </div>
               </div>
             );
           })
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
-            No messages yet. Start the conversation!
+          <div className="h-full flex flex-col items-center justify-center text-slate-400 pb-20">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+              <User size={30} className="text-slate-300" />
+            </div>
+            <p>No messages yet.</p>
+            <p className="text-sm">Start the conversation with {otherUser?.fullName || "this user"}!</p>
           </div>
         )}
-
         <div ref={scrollRef}></div>
       </div>
 
-      {/* Input */}
-      <form
-        onSubmit={handleSendMessage}
-        className="bg-white border-t p-4 flex gap-2"
-      >
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          className="flex-1 border rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-700 transition"
-        >
-          Send
-        </button>
-      </form>
+      {/* INPUT AREA */}
+      <div className="bg-white border-t border-slate-200 p-3 sm:p-4 z-10">
+        <form onSubmit={handleSendMessage} className="max-w-5xl mx-auto flex gap-2 sm:gap-3 items-end">
+          <textarea
+            rows="1"
+            placeholder="Type your message here..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              // Submit on Enter (without shift)
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+              }
+            }}
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none max-h-32 custom-scrollbar transition-all"
+          />
+          <button
+            type="submit"
+            disabled={!newMessage.trim()}
+            className="bg-blue-600 text-white h-[46px] px-6 rounded-xl font-bold shadow-sm shadow-blue-200 hover:bg-blue-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center shrink-0"
+          >
+            Send
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

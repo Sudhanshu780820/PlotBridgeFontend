@@ -16,6 +16,7 @@ const ChatPage = ({ currentUser }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+        const token = localStorage.getItem('token');
        const res = await axios.get(`${backendUrl}/api/messages/${conversationId}`);
         setMessages(res.data);
       } catch (error) {
@@ -51,16 +52,25 @@ const ChatPage = ({ currentUser }) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    const localUser = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+
+    if (!localUser) {
+      alert("You must be logged in to send a message.");
+      return;
+    }
+
     const messageData = {
       conversationId: conversationId,
-      senderId: currentUser._id,
+      senderId: localUser._id || localUser.id,
       text: newMessage,
     };
 
     try {
       // Save message to MongoDB
-      const res = await axios.post(`${backendUrl}/api/messages`, messageData);
-      
+      const res = await axios.post(`${backendUrl}/api/messages`, messageData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       // Send message to the other person via Socket.io
       socket.emit("send_message", res.data);
 
@@ -69,6 +79,7 @@ const ChatPage = ({ currentUser }) => {
       setNewMessage(""); // Clear the input box
     } catch (error) {
       console.error("Error sending message:", error);
+      alert("Failed to send message.");
     }
   };
 

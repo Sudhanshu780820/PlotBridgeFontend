@@ -39,7 +39,7 @@ const Sidebar = () => {
           <button>Add Property </button>
         </div>
         </Link>
-        <Link to='/inbox'>
+        <Link to='/seller-dashboard/inbox'>
         <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
           <MessageSquare size={20} />
           <span>Inquiries</span>

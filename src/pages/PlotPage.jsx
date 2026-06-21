@@ -8,6 +8,9 @@ export default function PlotsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   // 1. Fetch real data from your backend
+
+
+
   useEffect(() => {
     const fetchPlots = async () => {
       try {

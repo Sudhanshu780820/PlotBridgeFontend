@@ -61,7 +61,7 @@ const handleContactSeller = async () => {
 
       // Redirect to the chat page using the new conversation ID
       const conversationId = response.data._id;
-      navigate(`/chat/${conversationId}`);
+      navigate(`/buyer-dashboard/chat/${conversationId}`);
       
     } catch (err) {
       console.error("Error starting conversation:", err);

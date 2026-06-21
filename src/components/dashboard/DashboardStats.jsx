@@ -26,6 +26,7 @@ const DashboardStats = () => {
         });
 
         const result = await response.json();
+        console.log("Dashboard API Response:", result);
 
         if (response.ok) {
           // Update state with real data from backend
@@ -35,6 +36,12 @@ const DashboardStats = () => {
             soldProperties: result.soldProperties || 0,
             totalViews: result.totalViews || 0,
           });
+          console.log("Setting state:", {
+  totalListings: result.totalListings,
+  activeListings: result.activeListings,
+  soldProperties: result.soldProperties,
+  totalViews: result.totalViews,
+});
         } else {
           console.error("Failed to fetch stats:", result.message);
         }

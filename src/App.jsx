@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import PlotsPage from "./pages/PlotPage";
 import MyListings from "./components/dashboard/Mylistings";
 import SellerDashHome from "./components/dashboard/SellerDashHome";
-import DashboardStats from "./components/dashboard/DashboardStats";
+import SellerDashboardStats from "./components/dashboard/DashboardStats";
 import BuyerDashHome from "./components/buyer/BuyerDashHome";
 import BuyerProfile from "./components/buyer/MyProfile";
 import SavedProperties from "./components/buyer/SavedProperties";
@@ -28,7 +28,7 @@ const App = () => {
 
         {/* Seller Dashboard Routes */}
         <Route path="/seller-dashboard" element={<SellerDashHome />}>
-          <Route index element={<DashboardStats />} />
+          <Route index element={<SellerDashboardStats />} />
           <Route path="add-property" element={<AddPlot />} />
           <Route path="edit-property/:id" element={<EditProperty />} />
           

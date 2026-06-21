@@ -26,7 +26,6 @@ const DashboardStats = () => {
         });
 
         const result = await response.json();
-        console.log("Dashboard API Response:", result);
 
         if (response.ok) {
           // Update state with real data from backend
@@ -42,6 +41,7 @@ const DashboardStats = () => {
   soldProperties: result.soldProperties,
   totalViews: result.totalViews,
 });
+        console.log("Dashboard API Response:", result);
         } else {
           console.error("Failed to fetch stats:", result.message);
         }
@@ -54,14 +54,14 @@ const DashboardStats = () => {
 
     fetchStats();
   }, []); // Empty array ensures this only runs once when the page loads
-
+console.log("DashboardStats Render:", statsData);
   // 3. Format the state into your array structure for rendering
-  const stats = [
-    { title: "Total Listings", value: statsData.totalListings },
-    { title: "Active Listings", value: statsData.activeListings },
-    { title: "Sold Properties", value: statsData.soldProperties },
-    { title: "Total Views", value: statsData.totalViews },
-  ];
+ const stats = [
+  { title: "Total Listings", value: 999 },
+  { title: "Active Listings", value: 888 },
+  { title: "Sold Properties", value: 777 },
+  { title: "Total Views", value: 666 },
+];
 
   return (
     <div className="grid grid-cols-4 gap-4">

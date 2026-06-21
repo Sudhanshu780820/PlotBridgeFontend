@@ -1,87 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-const DashboardStats = () => {
-  // 1. Initialize state with default values (0)
-  const [statsData, setStatsData] = useState({
+export default function SellerDashboardStats() {
+  // 1. Set up state to hold the numbers
+  const [stats, setStats] = useState({
     totalListings: 0,
     activeListings: 0,
     soldProperties: 0,
-    totalViews: 0,
+    totalViews: 0
   });
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const [loading, setLoading] = useState(true);
 
-  // 2. Fetch real data when the component mounts
+  // 2. Fetch the data when the component mounts
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardStats = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return; // Handle not logged in
+
       try {
-        const token = localStorage.getItem("token");
-        
-        // Fetch from your backend dashboard route
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/stats`, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Send token to identify the user
+            'Authorization': `Bearer ${token}` // Provide the token to unlock the route
           }
         });
 
         const result = await response.json();
 
-        if (response.ok) {
-          // Update state with real data from backend
-          setStatsData({
-            totalListings: result.totalListings || 0,
-            activeListings: result.activeListings || 0,
-            soldProperties: result.soldProperties || 0,
-            totalViews: result.totalViews || 0,
-          });
-          console.log("Setting state:", {
-  totalListings: result.totalListings,
-  activeListings: result.activeListings,
-  soldProperties: result.soldProperties,
-  totalViews: result.totalViews,
-});
-        console.log("Dashboard API Response:", result);
-        } else {
-          console.error("Failed to fetch stats:", result.message);
+        if (response.ok && result.success) {
+          // 3. Update the state with the live database numbers
+          setStats(result.stats);
         }
       } catch (error) {
-        console.error("Error connecting to server:", error);
+        console.error("Failed to fetch dashboard stats:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchStats();
-  }, []); // Empty array ensures this only runs once when the page loads
-console.log("DashboardStats Render:", statsData);
-  // 3. Format the state into your array structure for rendering
- const stats = [
-  { title: "Total Listings", value: 999 },
-  { title: "Active Listings", value: 888 },
-  { title: "Sold Properties", value: 777 },
-  { title: "Total Views", value: 666 },
-];
+    fetchDashboardStats();
+  }, []); // Empty dependency array means this runs once on load
 
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {stats.map((item) => (
-        <div
-          key={item.title}
-          className="bg-white p-5 rounded-xl shadow border border-slate-100"
-        >
-          <h3 className="text-gray-500 font-medium">{item.title}</h3>
-          <p className="text-2xl font-bold mt-2 text-slate-800">
-            {isLoading ? (
-              <span className="text-slate-300 animate-pulse">...</span> // Simple loading effect
-            ) : (
-              item.value
-            )}
-          </p>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Overview</h1>
+      
+      {/* 4. Plug the state variables into your UI */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        {/* Total Listings Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Total Listings</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.totalListings}
+          </h3>
         </div>
-      ))}
+
+        {/* Active Listings Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Active Listings</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.activeListings}
+          </h3>
+        </div>
+
+        {/* Sold Properties Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Sold Properties</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.soldProperties}
+          </h3>
+        </div>
+
+        {/* Total Views Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Total Views</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.totalViews}
+          </h3>
+        </div>
+
+      </div>
     </div>
   );
-};
-
-export default DashboardStats;
+}

@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import PlotsPage from "./pages/PlotPage";
 import MyListings from "./components/dashboard/Mylistings";
 import SellerDashHome from "./components/dashboard/SellerDashHome";
-import DashboardStats from "./components/buyer/DashboardStats";
+import DashboardStats from "./components/dashboard/DashboardStats";
 import BuyerDashHome from "./components/buyer/BuyerDashHome";
 import BuyerProfile from "./components/buyer/MyProfile";
 import SavedProperties from "./components/buyer/SavedProperties";

@@ -1,75 +1,86 @@
-// controllers/dashboardController.js
+import React, { useState, useEffect } from 'react';
 
-const Plot = require("../models/Plot");
+export default function SellerDashboardStats() {
+  // 1. Set up state to hold the numbers
+  const [stats, setStats] = useState({
+    totalListings: 0,
+    activeListings: 0,
+    soldProperties: 0,
+    totalViews: 0
+  });
+  
+  const [loading, setLoading] = useState(true);
 
-const getDashboardStats = async (req, res) => {
-  try {
-    const userId = req.user.id;
+  // 2. Fetch the data when the component mounts
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return; // Handle not logged in
 
-    // Total plots
-    const totalListings = await Plot.countDocuments({
-      seller: userId,
-    });
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard/stats`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}` // Provide the token to unlock the route
+          }
+        });
 
-    // Active plots
-    const activeListings = await Plot.countDocuments({
-      seller: userId,
-      status: "Active",
-    });
+        const result = await response.json();
 
-    // Sold plots
-    const soldProperties = await Plot.countDocuments({
-      seller: userId,
-      status: "Sold",
-    });
+        if (response.ok && result.success) {
+          // 3. Update the state with the live database numbers
+          setStats(result.stats);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Get all seller plots for views calculation
-    const plots = await Plot.find(
-      { seller: userId },
-      "views"
-    );
+    fetchDashboardStats();
+  }, []); // Empty dependency array means this runs once on load
 
-    const totalViews = plots.reduce(
-      (sum, plot) => sum + (plot.views || 0),
-      0
-    );
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Overview</h1>
+      
+      {/* 4. Plug the state variables into your UI */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        {/* Total Listings Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Total Listings</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.totalListings}
+          </h3>
+        </div>
 
-    res.status(200).json({
-      totalListings,
-      activeListings,
-      soldProperties,
-      totalViews,
-    });
-  } catch (error) {
-    console.error("Dashboard Stats Error:", error);
+        {/* Active Listings Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Active Listings</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.activeListings}
+          </h3>
+        </div>
 
-    res.status(500).json({
-      message: "Error fetching dashboard stats",
-    });
-  }
-};
+        {/* Sold Properties Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Sold Properties</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.soldProperties}
+          </h3>
+        </div>
 
-const getMylistings = async (req, res) => {
-  try {
-    const userId = req.user.id;
+        {/* Total Views Card */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <p className="text-sm font-medium text-slate-500 mb-2">Total Views</p>
+          <h3 className="text-3xl font-black text-slate-800">
+            {loading ? '...' : stats.totalViews}
+          </h3>
+        </div>
 
-    const listings = await Plot.find({
-      seller: userId,
-    }).sort({ createdAt: -1 });
-
-    res.status(200).json({
-      listings,
-    });
-  } catch (error) {
-    console.error("My Listings Error:", error);
-
-    res.status(500).json({
-      message: "Error fetching your listings",
-    });
-  }
-};
-
-module.exports = {
-  getDashboardStats,
-  getMylistings,
-};
+      </div>
+    </div>
+  );
+}

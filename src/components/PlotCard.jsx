@@ -71,6 +71,8 @@ const handleSave = async (plotId) => {
   } catch (error) {
     console.error("Save Property Error:", error);
   }
+  console.log("Title:", plot.title);
+console.log("Images:", plot.images);
 };
   return (
     <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 hover:border-slate-300 shadow-sm hover:shadow-2xl hover:scale-105 hover:z-10 transform origin-center transition-all duration-300 flex flex-col">

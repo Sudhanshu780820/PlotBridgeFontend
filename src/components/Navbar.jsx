@@ -42,7 +42,7 @@ const Navbar = () => {
           
           {/* Logo */}
           <Link to='/' className='text-2xl font-black tracking-tight text-blue-600 transition-transform active:scale-95'>
-            Plot<span className='text-emerald-500'>Bridge</span>
+            Estate<span className='text-emerald-500'>Locator</span>
           </Link>
 
           {/* Main Core Links (Conditionally Rendered) */}

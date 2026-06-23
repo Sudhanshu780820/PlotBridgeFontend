@@ -7,6 +7,9 @@ import React, { useState, useEffect } from "react";
 export default function PlotCard({ plot }) {
     let displayImage =
     "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80";
+    if (plot.images && plot.images.length > 0) {
+  displayImage = plot.images[0]?.url || plot.images[0];
+}
   const [saved, setSaved] = useState(false);
 
 useEffect(() => {
@@ -71,8 +74,6 @@ const handleSave = async (plotId) => {
   } catch (error) {
     console.error("Save Property Error:", error);
   }
-  console.log("Title:", plot.title);
-console.log("Images:", plot.images);
 };
   return (
     <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 hover:border-slate-300 shadow-sm hover:shadow-2xl hover:scale-105 hover:z-10 transform origin-center transition-all duration-300 flex flex-col">

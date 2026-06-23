@@ -15,7 +15,7 @@ const BuyerSidebar = () => {
   return (
     <div className="fixed  w-64 h-screen bg-gray-900 text-white p-5">
       <h1 className="text-2xl font-bold mb-8">
-        Plot<span className="text-blue-500">Bridge</span>
+        Estate<span className="text-blue-500">Locator</span>
       </h1>
 
       <nav className="space-y-2">

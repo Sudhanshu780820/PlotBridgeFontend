@@ -2,20 +2,22 @@ import { Heart } from "lucide-react";
 
 const handleSave = async (plotId) => {
   try {
-    const token = localStorage.getItem("token");
+    if (savedProperties.includes(plotId)) {
+      await axios.delete(
+        `${API_BASE_URL}/api/saved-properties/${plotId}`
+      );
 
-    await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/api/saved-properties/${plotId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      setSavedProperties((prev) =>
+        prev.filter((id) => id !== plotId)
+      );
+    } else {
+      await axios.post(
+        `${API_BASE_URL}/api/saved-properties/${plotId}`
+      );
 
-    alert("Property Saved");
-  } catch (error) {
-    console.error(error);
+      setSavedProperties((prev) => [...prev, plotId]);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };

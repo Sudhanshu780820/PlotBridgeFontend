@@ -1,25 +1,59 @@
-import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Heart } from "lucide-react";
+import React, { useState, useEffect } from "react";
 
 export default function PlotCard({ plot }) {
   const [saved, setSaved] = useState(false);
 
-  // Image Resolver
-  let displayImage =
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80";
+useEffect(() => {
+  checkSavedStatus();
+}, [plot._id]);
 
-  if (plot.images && plot.images.length > 0) {
-    displayImage = plot.images[0];
-  } else if (plot.image) {
-    displayImage = plot.image;
+const checkSavedStatus = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/api/saved-properties`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const isSaved = res.data.some(
+      (savedPlot) => savedPlot._id === plot._id
+    );
+
+    setSaved(isSaved);
+  } catch (error) {
+    console.error(error);
   }
+};
 
-  const handleSave = async (plotId) => {
-    try {
-      const token = localStorage.getItem("token");
+const handleSave = async (plotId) => {
+  try {
+    const token = localStorage.getItem("token");
 
+    if (!token) return;
+
+    if (saved) {
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/api/saved-properties/${plotId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSaved(false);
+    } else {
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/saved-properties/${plotId}`,
         {},
@@ -31,11 +65,11 @@ export default function PlotCard({ plot }) {
       );
 
       setSaved(true);
-    } catch (error) {
-      console.error("Save Property Error:", error);
     }
-  };
-
+  } catch (error) {
+    console.error("Save Property Error:", error);
+  }
+};
   return (
     <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 hover:border-slate-300 shadow-sm hover:shadow-2xl hover:scale-105 hover:z-10 transform origin-center transition-all duration-300 flex flex-col">
 
@@ -53,20 +87,20 @@ export default function PlotCard({ plot }) {
         </span>
 
         {/* Save Button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleSave(plot._id);
-          }}
-          className="absolute top-2 right-2 p-2 rounded-full bg-white shadow hover:shadow-md transition"
-        >
-          <Heart
-            size={18}
-            fill={saved ? "currentColor" : "none"}
-            className={saved ? "text-red-500" : "text-slate-600"}
-          />
-        </button>
+       <button
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleSave(plot._id);
+  }}
+  className="absolute top-2 right-2 p-2 rounded-full bg-white shadow hover:shadow-md transition"
+>
+  <Heart
+    size={18}
+    fill={saved ? "currentColor" : "none"}
+    className={saved ? "text-red-500" : "text-slate-600"}
+  />
+</button>
       </div>
 
       {/* Content */}

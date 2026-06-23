@@ -5,6 +5,8 @@ import { Heart } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 export default function PlotCard({ plot }) {
+    let displayImage =
+    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80";
   const [saved, setSaved] = useState(false);
 
 useEffect(() => {

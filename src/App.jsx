@@ -19,6 +19,7 @@ import EditProperty from "./components/dashboard/EditProperty";
 import ChatPage from "./pages/ChatPage";
 import Inbox from "./pages/Inbox"
 import BuyerInbox from "./components/buyer/buyerinbox"
+import ChatWidget from "./components/ChatWidget";
 
 const App = () => {
   return (
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />
+        <ChatWidget/>
        
       </Routes>
     </div>

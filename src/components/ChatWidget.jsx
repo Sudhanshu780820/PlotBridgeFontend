@@ -32,13 +32,14 @@ export default function ChatWidget() {
         message,
       });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: res.data.reply,
-        },
-      ]);
+     setMessages((prev) => [
+  ...prev,
+  {
+    sender: "bot",
+    text: res.data.reply,
+    properties: res.data.properties || [],
+  },
+]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -87,14 +88,58 @@ export default function ChatWidget() {
                 }`}
               >
                 <div
-                  className={`max-w-[75%] rounded-xl px-4 py-2 whitespace-pre-wrap ${
-                    msg.sender === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white shadow"
-                  }`}
-                >
-                  {msg.text}
-                </div>
+  className={`max-w-[80%] rounded-xl px-4 py-2 whitespace-pre-wrap ${
+    msg.sender === "user"
+      ? "bg-blue-600 text-white"
+      : "bg-white shadow"
+  }`}
+>
+  <p>{msg.text}</p>
+
+  {msg.properties?.length > 0 && (
+    <div className="mt-3 space-y-3">
+      {msg.properties.map((property) => (
+        <div
+          key={property._id}
+          className="border rounded-lg overflow-hidden bg-white shadow"
+        >
+          <img
+            src={property.images?.[0]}
+            alt={property.title}
+            className="w-full h-36 object-cover"
+          />
+
+          <div className="p-3">
+            <h3 className="font-semibold text-gray-800">
+              {property.title}
+            </h3>
+
+            <p className="text-sm text-gray-600">
+              📍 {property.location}
+            </p>
+
+            <p className="text-green-600 font-bold">
+              ₹ {property.price?.toLocaleString()}
+            </p>
+
+            <p className="text-sm">
+              📐 {property.size} sq.ft
+            </p>
+
+            <button
+              onClick={() =>
+                window.open(`/plots/${property._id}`, "_blank")
+              }
+              className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-sm"
+            >
+              View Property
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
               </div>
             ))}
 

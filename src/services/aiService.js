@@ -1,25 +1,48 @@
-import axios from "axios";
+const OpenAI = require("openai");
 
-const API = import.meta.env.VITE_API_BASE_URL;
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-export const searchProperties = async(data)=>{
+async function extractFilters(message) {
+  const completion = await client.chat.completions.create({
+    model: "gpt-4.1-mini",
+    temperature: 0,
+    messages: [
+      {
+        role: "system",
+        content: `
+You are PlotBridge AI.
 
-    const res = await axios.post(
-        `${API}/api/ai/search`,
-        data
-    );
+Extract search filters from the user's message.
 
-    return res.data;
+Return ONLY valid JSON.
 
+Example:
+
+{
+ "city": "",
+ "category": "",
+ "budget": null,
+ "minArea": null,
+ "maxArea": null
 }
 
-export const compareProperties = async(ids){
+Budget must be in rupees.
 
-    const res = await axios.post(
-        `${API}/api/ai/compare`,
-        { ids }
-    );
+If a field isn't mentioned, keep it null or empty.
+`
+      },
+      {
+        role: "user",
+        content: message
+      }
+    ]
+  });
 
-    return res.data;
-
+  return JSON.parse(completion.choices[0].message.content);
 }
+
+module.exports = {
+  extractFilters
+};

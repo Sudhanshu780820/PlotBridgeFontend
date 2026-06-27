@@ -55,9 +55,10 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/my-profile" element={<UserProfile />} />
         <Route path="/login" element={<Login />} />
-        <ChatWidget/>
+       
        
       </Routes>
+       <ChatWidget/>
     </div>
   );
 };
